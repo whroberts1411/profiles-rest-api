@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import viewsets
 from profiles_api import serializers
 
 #------------------------------------------------------------------------------
@@ -53,5 +54,60 @@ class HelloApiView(APIView):
         """ This will delete the requested object """
 
         return Response({'method':'DELETE'})
+
+#------------------------------------------------------------------------------
+class HelloViewSet(viewsets.ViewSet):
+    """ Test API Viewset """
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """ Return a message and list """
+
+        a_viewset = [
+            'Reading books about anything',
+            'Taking photographs of landscapes and stuff',
+            'Learning new programming skills',
+            'Walking up and down mountains'
+        ]
+
+        return Response({'message':'Hello', 'a_viewset':a_viewset})
+
+    #--------------------------------------------------------------------------
+    def create(self, request):
+        """ Create a new object """
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            message = f'Hello {name}, from my API'
+            return Response({'message':message})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #--------------------------------------------------------------------------
+    def retrieve(self, request, pk=None):
+        """ Get an object by its ID """
+
+        return Response({'http_method':'GET'})
+
+    #--------------------------------------------------------------------------
+    def update(self, request, pk=None):
+        """ Replace an object with new version """
+
+        return Response({'http_method':'PUT'})
+
+    #--------------------------------------------------------------------------
+    def partial_update(self, request, pk=None):
+        """ Update part of an object """
+
+        return Response({'http_method':'PATCH'})
+
+    #------------------------------------------------------------------------------
+    def destroy(self, request, pk=None):
+        """ Delete an object """
+
+        return Response({'http_method':'DELETE'})
 
 #------------------------------------------------------------------------------
